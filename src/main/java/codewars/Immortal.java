@@ -54,7 +54,7 @@ This is no ordinary magic (the Elder's life is at stake), so you need to care ab
      */
     static long elderAge(long n, long m, long k, long newp) {
 
-        return 0;
+        return new Immortal().sum(0, n, m, k, newp);
     }
 
     public static void main(String[] args) {
@@ -73,29 +73,82 @@ This is no ordinary magic (the Elder's life is at stake), so you need to care ab
             System.out.println();
         }
 
+        System.out.println(new Immortal().sum(0, 1, 7, 0, 1000000));
+        System.out.println(new Immortal().sum(0, 3, 4, 0, 1000000));
+        System.out.println(new Immortal().sum(0, 3, 7, 0, 1000000));
+    }
 
-        int m = 19;
-        int n = 14;
-        int res = 0;
-        int t1 = 0;
-        while (true) {
-            int pow = 1;
-            while (pow * 2 < m) {
-                pow = pow * 2;
-            }
-            m -= pow;
-            while (pow > 0 && m > 0) {
-                pow = pow / 2;
-                if (pow < m) m -= pow;
-            }
+    int sum(long base, long m, long n, long loss, long modulos) {
+        if (m == 0 || n == 0) return 0;
+        long max = Math.max(m, n);
+        long min = Math.min(m, n);
 
-//            2 ^ 5 > m = 19 > t2 = 2 ^ 4
-//            res += (t1 + (t1 + t2) - 1) / 2 * (t2 - t1) * n = (0 + 2 ^ 4 - 1) / 2 * 2 ^ 4 * 14;
-//            m = n = 14, n = m –t2 = 3;
-//            t1 = t2;
-//            t2 = 12 = 2 ^ 3 + 2 ^ 2 < m
+        long a = findMaxPowerOf2(min);
+        long b = findMaxPowerOf2(max);
+        long res = 0;
+        if (a == b) {
+            res += moduloMultiplication(progressionSumWithLoss(base, base + b - 1, b, loss, modulos), a, modulos) +
+                    moduloMultiplication(progressionSumWithLoss(base + a, base + a + b - 1, b, loss, modulos), (min - a), modulos) +
+                    moduloMultiplication(progressionSumWithLoss(base + b, base + b + a - 1, a, loss, modulos), (max - b), modulos) +
+                    sum(base, min - a, max - b, loss, modulos);
+//            res += progressionSumWithLoss(base, base + b - 1, b, loss, modulos) * (a % modulos) +
+//                    progressionSumWithLoss(base + a, base + a + b - 1, b, loss, modulos) * ((min - a) % modulos) +
+//                    progressionSumWithLoss(base + b, base + b + a - 1, a, loss, modulos) * ((max - b) % modulos) +
+//                    sum(base, min - a, max - b, loss, modulos);
+        } else {
+            res += moduloMultiplication(progressionSumWithLoss(base, base + b - 1, b, loss, modulos), min, modulos) +
+                    sum(base + b, min, max - b, loss, modulos);
+//            res += progressionSumWithLoss(base, base + b - 1, b, loss, modulos) * (min % modulos) +
+//                    sum(base + b, min, max - b, loss, modulos);
         }
+        return (int) (res % modulos);
+    }
 
+    long progressionSumWithLoss(long a, long b, long n, long loss, long modulos) {
+        long res;
+        if (b <= loss) return 0;
+        if (a >= loss) {
+            if (n % 2 == 0) {
+                res = moduloMultiplication((a - loss) % modulos + (b - loss) % modulos, n / 2, modulos);
+            } else {
+                if (((a - loss) & 1) == 0) {
+                    res = moduloMultiplication((a - loss) / 2 % modulos + (b - loss) / 2 % modulos, n, modulos);
+                } else {
+                    res = moduloMultiplication((a - loss - 1) / 2 % modulos + (b - loss - 1) / 2 % modulos + 1, n, modulos);
+                }
+//                res = (((long) a + b - 2 * loss) / 2) % modulos * (n % modulos);
+            }
 
+        } else {
+            if ((b - loss) % 2 == 0) {
+                res = moduloMultiplication((b - loss) / 2, (b - loss) % modulos + 1, modulos);
+//                res = (b - loss) / 2 % modulos * (((b - loss) % modulos + 1) % modulos);
+            } else {
+                res = moduloMultiplication((b - loss), (b - 1 - loss) / 2 % modulos + 1, modulos);
+//                res = (b - loss) % modulos * (((b - 1 - loss) / 2 % modulos + 1) % modulos);
+            }
+        }
+        return (int) (res % modulos);
+    }
+
+    static long moduloMultiplication(long a, long b, long mod) {
+        long res = 0;
+        a %= mod;
+        while (b > 0) {
+            if ((b & 1) > 0) {
+                res = (res + a) % mod;
+            }
+            a = (2 * a) % mod;
+            b >>= 1;
+        }
+        return res;
+    }
+
+    long findMaxPowerOf2(long a) {
+        long res = 1;
+        while (res <= a - res) {
+            res *= 2;
+        }
+        return res;
     }
 }
