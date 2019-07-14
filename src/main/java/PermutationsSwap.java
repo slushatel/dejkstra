@@ -6,30 +6,32 @@ public class PermutationsSwap {
     static int dataSize;
 
     public static void main(String[] args) {
-        final int[] dataInitial = {1, 2, 3, 4};
+        final int[] dataInitial = {0, 1, 2, 3};
         dataSize = dataInitial.length;
-        new PermutationsSwap().getPermutations(dataInitial, 0).stream().map(Arrays::toString).forEach(System.out::println);
+        new PermutationsSwap().getPermutations(dataInitial, 0);
     }
 
-    List<int[]> getPermutations(int[] data, int index) {
-        List<int[]> res = new LinkedList<>();
-        if (index == dataSize) return res;
-        res.add(data);
-
-        for (int i = index; i < dataSize; i++) {
-            int[] dataSwapped = swap(data, i, index);
-            getPermutations(dataSwapped, index + 1);
+    void getPermutations(int[] data, int index) {
+        if (index == dataSize - 1) {
+            return;
         }
+        if (index == 0) {
+            System.out.println(Arrays.toString(data));
+        }
+
         getPermutations(data, index + 1);
 
-        return res;
+        for (int i = index + 1; i < dataSize; i++) {
+            swap(data, index, i);
+            System.out.println(Arrays.toString(data));
+            getPermutations(data, index + 1);
+            swap(data, i, index);
+        }
     }
 
-    int[] swap(int[] data, int a, int b) {
-        int[] res = Arrays.copyOf(data, dataSize);
-        int tmp = res[a];
-        res[a] = res[b];
-        res[b] = tmp;
-        return res;
+    void swap(int[] data, int a, int b) {
+        int tmp = data[a];
+        data[a] = data[b];
+        data[b] = tmp;
     }
 }
