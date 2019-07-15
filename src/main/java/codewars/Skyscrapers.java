@@ -54,14 +54,14 @@ They also have lots of other logic, numbers and mathematical puzzles, and their 
     int[] currentPermutation;
 
     class Clue {
-        int left;
-        int right;
+        int leftTop;
+        int rightBottom;
         int lineIndex;
         boolean isVertical;
 
-        public Clue(int left, int right, int lineIndex, boolean isVertical) {
-            this.left = left;
-            this.right = right;
+        public Clue(int leftTop, int rightBottom, int lineIndex, boolean isVertical) {
+            this.leftTop = leftTop;
+            this.rightBottom = rightBottom;
             this.lineIndex = lineIndex;
             this.isVertical = isVertical;
         }
@@ -81,8 +81,8 @@ They also have lots of other logic, numbers and mathematical puzzles, and their 
         }
         // fill permutations
         permutations = new ArrayList[n + 1][n + 1];
-        for (int i = 1; i <= n; i++) {
-            for (int j = 1; j <= n; j++) {
+        for (int i = 0; i <= n; i++) {
+            for (int j = 0; j <= n; j++) {
                 permutations[i][j] = new ArrayList<>();
             }
         }
@@ -103,8 +103,8 @@ They also have lots of other logic, numbers and mathematical puzzles, and their 
             Clue clue = allClues.get(i);
             if (!clue.isVertical) {
                 int permIndex;
-                if (clue.left > 0 || clue.right > 0) {
-                    permIndex = permutations[clue.left][clue.right].get(currentPermutation[i]);
+                if (clue.leftTop > 0 || clue.rightBottom > 0) {
+                    permIndex = permutations[clue.leftTop][clue.rightBottom].get(currentPermutation[i]);
                 } else {
                     permIndex = currentPermutation[i];
                 }
@@ -117,8 +117,8 @@ They also have lots of other logic, numbers and mathematical puzzles, and their 
     boolean fillFromClues(int clueIndex) {
         if (clueIndex == 2 * n) return true;
         Clue clue = allClues.get(clueIndex);
-        if (clue.left > 0 || clue.right > 0) {
-            for (int i = 0; i < permutations[clue.left][clue.right].size(); i++) {
+        if (clue.leftTop > 0 || clue.rightBottom > 0) {
+            for (int i = 0; i < permutations[clue.leftTop][clue.rightBottom].size(); i++) {
                 currentPermutation[clueIndex] = i;
                 if (!checkClues(clueIndex)) continue;
                 if (fillFromClues(clueIndex + 1)) return true;
@@ -154,11 +154,11 @@ They also have lots of other logic, numbers and mathematical puzzles, and their 
         return perm1[clue2.lineIndex] == perm2[clue.lineIndex];
     }
 
-    int[] getPermutationByClueIndex(int clueIndex){
+    int[] getPermutationByClueIndex(int clueIndex) {
         Clue clue = allClues.get(clueIndex);
         int permIndex;
-        if (clue.left > 0 || clue.right > 0) {
-            permIndex = permutations[clue.left][clue.right].get(currentPermutation[clueIndex]);
+        if (clue.leftTop > 0 || clue.rightBottom > 0) {
+            permIndex = permutations[clue.leftTop][clue.rightBottom].get(currentPermutation[clueIndex]);
         } else {
             permIndex = currentPermutation[clueIndex];
         }
@@ -173,15 +173,15 @@ They also have lots of other logic, numbers and mathematical puzzles, and their 
     void sortClues(int[] clues) {
         for (int i = 0; i < n; i++) {
             allClues.add(new Clue(clues[i], clues[3 * n - 1 - i], i, true));
-            allClues.add(new Clue(clues[n + i], clues[4 * n - 1 - i], i, false));
+            allClues.add(new Clue(clues[4 * n - 1 - i], clues[n + i], i, false));
         }
-        allClues.sort((o1, o2) -> {
-            if (o1.left > 0 && o1.right > 0) return 1;
-            if (o2.left > 0 && o2.right > 0) return -1;
-            if (o1.left > 0 || o1.right > 0) return 1;
-            if (o2.left > 0 || o2.right > 0) return -1;
-            return 0;
-        });
+        allClues.sort(Comparator.comparing(this::getCluePower));
+    }
+
+    Integer getCluePower(Clue clue) {
+        if (clue.leftTop > 0 && clue.rightBottom > 0) return 0;
+        if (clue.leftTop > 0 || clue.rightBottom > 0) return 1;
+        return 2;
     }
 
     void putPermutation(int[] data) {
