@@ -1,9 +1,8 @@
 package codewars;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
-public class FPT2 {
+public class FPTBruteForce {
 
     /*
     The eccentric candy-maker, Billy Bonka, is building a new candy factory to produce his new 4-flavor sugar pops. The candy is made by placing a piece of candy base onto a conveyer belt which transports the candy through four separate processing stations in sequential order. Each station adds another layer of flavor.
@@ -34,7 +33,7 @@ Test Example
 
 // INPUT - reference image A
 int[] stations = {0,65,93,36};
-new FPT(stations).solve();
+new FPTPermute(stations).solve();
 
 // OUTPUT #1 - reference image B
 // [0, 1, 2, 3, 4, 5, 15, 25, 35, 45, 55, 65, 64, 63, 73, 83, 93, 94, 95, 96, 86, 76, 66, 56, 46, 36]
@@ -50,13 +49,13 @@ new FPT(stations).solve();
 	Set<Integer> usedSquares = new HashSet<>();
 	long time = 0;
 
-	public FPT2(int[] stations) {
+	public FPTBruteForce(int[] stations) {
 		this.stations = stations;
 	}
 
 	public static void main(String[] args) {
 		int[] stations = {0, 65, 93, 36};
-		System.out.println(Arrays.toString(new FPT2(stations).solve().toArray()));
+		System.out.println(Arrays.toString(new FPTBruteForce(stations).solve().toArray()));
 	}
 
 	public List<Integer> solve() {
