@@ -14,10 +14,16 @@ public class Crossword {
 	}
 
 	private WordPlace[] doJob(String[] words) {
-		Arrays.sort(words, (o1, o2) -> ((Integer) o1.length()).compareTo(o2.length()));
+		Arrays.sort(words, (o1, o2) -> ((Integer) o2.length()).compareTo(o1.length()));
 		List<String> wordList = new ArrayList<>(Arrays.asList(words));
 		crossBoard = new CrossBoard(words.length);
 		processWords(wordList, 0);
+
+		char[][] arr = crossBoard.getCharsArray();
+		for (char[] arr1 : arr) {
+			System.out.println(Arrays.toString(arr1));
+		}
+
 		return crossBoard.wordPlaces;
 	}
 
@@ -28,7 +34,7 @@ public class Crossword {
 					crossBoard.findWordPosition(word, !vertical, level)) {
 				List<String> wordCopy = new ArrayList<>(words);
 				wordCopy.remove(word);
-				return processWords(wordCopy, level + 1);
+				if (processWords(wordCopy, level + 1)) return true;
 			}
 		}
 		return false;
@@ -43,15 +49,22 @@ public class Crossword {
 
 				if (word1.charAt(i) == word2.charAt(j)) {
 					res.add(new Point(i, j));
-				} else if (word1.charAt(i2) == word2.charAt(j)) {
+				}
+				if (word1.charAt(i2) == word2.charAt(j)) {
 					res.add(new Point(i2, j));
-				} else if (word1.charAt(i) == word2.charAt(j2)) {
+				}
+				if (word1.charAt(i) == word2.charAt(j2)) {
 					res.add(new Point(i, j2));
-				} else if (word1.charAt(i2) == word2.charAt(j2)) {
+				}
+				if (word1.charAt(i2) == word2.charAt(j2)) {
 					res.add(new Point(i2, j2));
 				}
 			}
 		}
+		final int xCenter = (word1.length() - 1) / 2;
+		final int yCenter = (word2.length() - 1) / 2;
+
+		res.sort(Comparator.comparing(o -> ((Integer) ((xCenter - o.x) * (xCenter - o.x) + (yCenter - o.y) * (yCenter - o.y)))));
 		return res;
 	}
 
@@ -76,13 +89,13 @@ public class Crossword {
 					for (Point p : intersections) {
 						int x, y;
 						if (vertical) {
-							x = p.x;
+							x = wp.startCol + p.x;
 							y = wp.startRow - p.y;
 						} else {
-							x = wp.startCol - p.x;
-							y = p.y;
+							x = wp.startCol - p.y;
+							y = wp.startRow + p.x;
 						}
-						WordPlace newWp = new WordPlace(x, y, vertical, word);
+						WordPlace newWp = new WordPlace(y, x, vertical, word);
 						if (check(newWp, level)) {
 							wordPlaces[level] = newWp;
 							return true;
@@ -133,25 +146,71 @@ public class Crossword {
 					if (wordPlaces[i].isVertical) {
 						if (Math.abs(wordPlaces[i].startCol - newWp.startCol) <= 1 &&
 								(newWp.startRow >= wordPlaces[i].startRow &&
-										newWp.startRow <= wordPlaces[i].startRow + wordPlaces[i].getLength()) ||
+										newWp.startRow <= wordPlaces[i].startRow + wordPlaces[i].getLength() ||
 								newWp.startRow + newWp.getLength() >= wordPlaces[i].startRow &&
 										newWp.startRow + newWp.getLength() <= wordPlaces[i].startRow + wordPlaces[i].getLength() ||
 								wordPlaces[i].startRow >= newWp.startRow &&
 										wordPlaces[i].startRow <= newWp.startRow + newWp.getLength()
-								) return false;
+								)) return false;
 					} else {
 						if (Math.abs(wordPlaces[i].startRow - newWp.startRow) <= 1 &&
 								(newWp.startCol >= wordPlaces[i].startCol &&
-										newWp.startCol <= wordPlaces[i].startCol + wordPlaces[i].getLength()) ||
+										newWp.startCol <= wordPlaces[i].startCol + wordPlaces[i].getLength() ||
 								newWp.startCol + newWp.getLength() >= wordPlaces[i].startCol &&
 										newWp.startCol + newWp.getLength() <= wordPlaces[i].startCol + wordPlaces[i].getLength() ||
 								wordPlaces[i].startCol >= newWp.startCol &&
 										wordPlaces[i].startCol <= newWp.startCol + newWp.getLength()
-								) return false;
+								)) return false;
 					}
 				}
 			}
 			return true;
+		}
+
+		private char[][] getCharsArray() {
+			int minX = 0, maxX = 0, minY = 0, maxY = 0;
+			if (wordPlaces.length > 0) {
+				WordPlace wp = wordPlaces[0];
+				minX = wp.startCol;
+				minY = wp.startRow;
+				if (wp.isVertical) {
+					maxX = Math.max(maxX, wp.startCol);
+					maxY = Math.max(maxY, wp.startRow + wp.getLength() - 1);
+				} else {
+					maxX = Math.max(maxX, wp.startCol + wp.getLength() - 1);
+					maxY = Math.max(maxY, wp.startRow);
+				}
+			}
+			for (WordPlace wp : wordPlaces) {
+				if (wp == null) continue;
+				minX = Math.min(minX, wp.startCol);
+				minY = Math.min(minY, wp.startRow);
+				if (wp.isVertical) {
+					maxX = Math.max(maxX, wp.startCol);
+					maxY = Math.max(maxY, wp.startRow + wp.getLength() - 1);
+				} else {
+					maxX = Math.max(maxX, wp.startCol + wp.getLength() - 1);
+					maxY = Math.max(maxY, wp.startRow);
+				}
+			}
+			char[][] chars = new char[maxX - minX + 1][maxY - minY + 1];
+			for (WordPlace wp : wordPlaces) {
+				if (wp == null) continue;
+
+				for (int i = 0; i < wp.getLength(); i++) {
+					char ch = wp.word.charAt(i);
+					int x, y;
+					if (wp.isVertical) {
+						x = wp.startCol - minX;
+						y = wp.startRow + i - minY;
+					} else {
+						x = wp.startCol + i - minX;
+						y = wp.startRow - minY;
+					}
+					chars[x][y] = ch;
+				}
+			}
+			return chars;
 		}
 	}
 
@@ -206,5 +265,7 @@ public class Crossword {
 					", isVertical=" + isVertical +
 					'}';
 		}
+
+
 	}
 }
