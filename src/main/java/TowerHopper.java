@@ -1,7 +1,3 @@
-import com.sun.org.apache.xpath.internal.operations.Bool;
-
-import java.util.stream.IntStream;
-
 public class TowerHopper {
     /*
     There is an array that represents heights of towers
@@ -13,10 +9,6 @@ public class TowerHopper {
     int[] towers = {4, 2, 0, 0, 2, 0};
     int startIndex = 0;
     Boolean[] isHopable = new Boolean[towers.length];
-
-//    {
-//        IntStream.range(0, isHopable.length).forEach(i -> isHopable[i] = -1);
-//    }
 
     public static void main(String[] args) {
         new TowerHopper().doJob();

@@ -20,7 +20,7 @@ public class RecoverATree {
     TreeNode currentNode;
     Stack<TreeNode> traverseStack = new Stack<>();
 
-    public class TreeNode {
+    private class TreeNode {
         int val;
         TreeNode left;
         TreeNode right;
