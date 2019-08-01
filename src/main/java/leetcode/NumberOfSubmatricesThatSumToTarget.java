@@ -35,15 +35,36 @@ Note:
 
  */
 
+	private int[] matrixLinear;
+	private int target;
+
 	public static void main(String[] args) {
-		int[][] matrix = {{0, 1, 0}, {1, 1, 1}, {0, 1, 0}};
-		System.out.println(new NumberOfSubmatricesThatSumToTarget().numSubmatrixSumTarget(matrix, 0));
+//		int[][] matrix = {{0, 1, 0}, {1, 1, 1}, {0, 1, 0}};
+//		System.out.println(new NumberOfSubmatricesThatSumToTarget().numSubmatrixSumTarget(matrix, 0));
+
+		int[] matrix2 = {0, 1, 0, 2, -2, -1,-1};
+		System.out.println(new NumberOfSubmatricesThatSumToTarget().numSubmatrixSumTarget2(matrix2, 0));
 	}
 
 	public int numSubmatrixSumTarget(int[][] matrix, int target) {
 
+
 		return 0;
 	}
+
+	public int numSubmatrixSumTarget2(int[] matrix, int target) {
+		matrixLinear = matrix;
+		this.target = target;
+		return countHelper(matrixLinear[0], 0);
+	}
+
+
+	private int countHelper(int s, int num) {
+		System.out.println("" + s + ":"+ num);
+		if (num == matrixLinear.length-1) return (s == target ? 1 : 0);
+		return (s == target ? 1 : 0) + countHelper(s + matrixLinear[num+1], num + 1) + countHelper(matrixLinear[num+1], num + 1);
+	}
+
 
 // brute force
 //	public int numSubmatrixSumTarget(int[][] matrix, int target) {
