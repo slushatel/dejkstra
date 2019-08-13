@@ -1,5 +1,9 @@
 package leetcode;
 
+import java.util.LinkedList;
+import java.util.List;
+import java.util.stream.Collectors;
+
 public class ShortestCommonSupersequence {
 	/*
 	1092. Shortest Common Supersequence
@@ -42,39 +46,49 @@ Note:
 				"xjtuwbmvsdeogmnzorndhmjoqnqjnhmfueifqwleggctttilmfokpgotfykyzdhfafiervrsyuiseumzmymtvsdsowmovagekhevyqhifwevpepgmyhnagjtsciaecswebcuvxoavfgejqrxuvnhvkmolclecqsnsrjmxyokbkesaugbydfsupuqanetgunlqmundxvduqmzidatemaqmzzzfjpgmhyoktbdgpgbmjkhmfjtsxjqbfspedhzrxavhngtnuykpapwluameeqlutkyzyeffmqdsjyklmrxtioawcrvmsthbebdqqrpphncthosljfaeidboyekxezqtzlizqcvvxehrcskstshupglzgmbretpyehtavxegmbtznhpbczdjlzibnouxlxkeiedzoohoxhnhzqqaxdwetyudhyqvdhrggrszqeqkqqnunxqyyagyoptfkolieayokryidtctemtesuhbzczzvhlbbhnufjjocporuzuevofbuevuxhgexmckifntngaohfwqdakyobcooubdvypxjjxeugzdmapyamuwqtnqspsznyszhwqdqjxsmhdlkwkvlkdbjngvdmhvbllqqlcemkqxxdlldcfthjdqkyjrrjqqqpnmmelrwhtyugieuppqqtwychtpjmloxsckhzyitomjzypisxzztdwxhddvtvpleqdwamfnhhkszsfgfcdvakyqmmusdvihobdktesudmgmuaoovskvcapucntotdqxkrovzrtrrfvoczkfexwxujizcfiqflpbuuoyfuoovypstrtrxjuuecpjimbutnvqtiqvesaxrvzyxcwslttrgknbdcvvtkfqfzwudspeposxrfkkeqmdvlpazzjnywxjyaquirqpinaennweuobqvxnomuejansapnsrqivcateqngychblywxtdwntancarldwnloqyywrxrganyehkglbdeyshpodpmdchbcc"));
 	}
 
-	String[][] cache;
-
 	public String shortestCommonSupersequence(String str1, String str2) {
-		cache = new String[str1.length() + 1][str2.length() + 1];
-		return moveForward(str1, str2, 0, 0);
-	}
-
-	private String moveForward(String s1, String s2, int i1, int i2) {
-		if (cache[i1][i2] != null) return cache[i1][i2];
-
-		if (i1 == s1.length() && i2 == s2.length()) {
-			cache[i1][i2] = "";
-		} else if (i1 == s1.length()) {
-			cache[i1][i2] = s2.charAt(i2) + moveForward(s1, s2, i1, i2 + 1);
-		} else if (i2 == s2.length()) {
-			cache[i1][i2] = s1.charAt(i1) + moveForward(s1, s2, i1 + 1, i2);
-		} else {
-			char ch1 = s1.charAt(i1);
-			char ch2 = s2.charAt(i2);
-			if (ch1 == ch2) {
-				String res = moveForward(s1, s2, i1 + 1, i2 + 1);
-				cache[i1][i2] = ch1 + res;
-			} else {
-				String res1 = moveForward(s1, s2, i1 + 1, i2);
-				String res2 = moveForward(s1, s2, i1, i2 + 1);
-				if (res1.length() < res2.length()) {
-					cache[i1][i2] = ch1 + res1;
-				} else {
-					cache[i1][i2] = ch2 + res2;
-				}
+		int len1 = str1.length();
+		int len2 = str2.length();
+		// calc the shortest path for possible sequences
+		int[][] pathCalc = new int[len1 + 1][len2 + 1];
+		for (int i = 0; i <= len1; i++) {
+			pathCalc[i][0] = i;
+		}
+		for (int j = 0; j <= len2; j++) {
+			pathCalc[0][j] = j;
+		}
+		for (int i = 1; i <= len1; i++) {
+			for (int j = 1; j <= len2; j++) {
+				char ch1 = str1.charAt(i - 1);
+				char ch2 = str2.charAt(j - 1);
+				if (ch1 == ch2) pathCalc[i][j] = pathCalc[i - 1][j - 1] + 1;
+				else pathCalc[i][j] = Math.min(pathCalc[i][j - 1], pathCalc[i - 1][j]) + 1;
 			}
 		}
-		return cache[i1][i2];
+
+		// choose the sequence
+		int i = len1;
+		int j = len2;
+		int curNum = pathCalc[i][j];
+		List<Character> res = new LinkedList<>();
+		char ch;
+		while (curNum > 0) {
+			if (i > 0 && j > 0 && str1.charAt(i-1) == str2.charAt(j-1)) {
+				i--;
+				j--;
+				ch = str1.charAt(i);
+			} else if (i > 0 && pathCalc[i - 1][j] == curNum - 1) {
+				i--;
+				ch = str1.charAt(i);
+			} else {
+				j--;
+				ch = str2.charAt(j);
+			}
+			res.add(0, ch);
+			curNum = pathCalc[i][j];
+		}
+
+		return res.stream().map(Object::toString).collect(Collectors.joining());
 	}
 
 }
