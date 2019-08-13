@@ -34,112 +34,47 @@ Note:
 		System.out.println(new ShortestCommonSupersequence().shortestCommonSupersequence("abacas", "cab"));
 		System.out.println(new ShortestCommonSupersequence().shortestCommonSupersequence("abacas", "casty"));
 		System.out.println(new ShortestCommonSupersequence().shortestCommonSupersequence("abacas", "bacas"));
+		System.out.println(new ShortestCommonSupersequence().shortestCommonSupersequence(
+				"bcaaacbbbcbdcaddadcacbdddcdcccdadadcbabaccbccdcdcbcaccacbbdcbabb",
+				"dddbbdcbccaccbababaacbcbacdddcdabadcacddbacadabdabcdbaaabaccbdaa"));
+		System.out.println(new ShortestCommonSupersequence().shortestCommonSupersequence(
+				"atdznrqfwlfbcqkezrltzyeqvqemikzgghxkzenhtapwrmrovwtpzzsyiwongllqmvptwammerobtgmkpowndejvbuwbporfyroknrjoekdgqqlgzxiisweeegxajqlradgcciavbpgqjzwtdetmtallzyukdztoxysggrqkliixnagwzmassthjecvfzmyonglocmvjnxkcwqqvgrzpsswnigjthtkuawirecfuzrbifgwolpnhcapzxwmfhvpfmqapdxgmddsdlhteugqoyepbztspgojbrmpjmwmhnldunskpvwprzrudbmtwdvgyghgprqcdgqjjbyfsujnnssfqvjhnvcotynidziswpzhkdszbblustoxwtlhkowpatbypvkmajumsxqqunlxxvfezayrolwezfzfyzmmneepwshpemynwzyunsxgjflnqmfghsvwpknqhclhrlmnrljwabwpxomwhuhffpfinhnairblcayygghzqmotwrywqayvvgohmujneqlzurxcpnwdipldofyvfdurbsoxdurlofkqnrjomszjimrxbqzyazakkizojwkuzcacnbdifesoiesmkbyffcxhqgqyhwyubtsrqarqagogrnaxuzyggknksrfdrmnoxrctntngdxxechxrsbyhtlbmzgmcqopyixdomhnmvnsafphpkdgndcscbwyhueytaeodlhlzczmpqqmnilliydwtxtpedbncvsqauopbvygqdtcwehffagxmyoalogetacehnbfxlqhklvxfzmrjqofaesvuzfczeuqegwpcmahhpzodsmpvrvkzxxtsdsxwixiraphjlqawxinlwfspdlscdswtgjpoiixbvmpzilxrnpdvigpccnngxmlzoentslzyjjpkxemyiemoluhqifyonbnizcjrlmuylezdkkztcphlmwhnkdguhelqzjgvjtrzofmtpuhifoqnokonhqtzxmimp",
+				"xjtuwbmvsdeogmnzorndhmjoqnqjnhmfueifqwleggctttilmfokpgotfykyzdhfafiervrsyuiseumzmymtvsdsowmovagekhevyqhifwevpepgmyhnagjtsciaecswebcuvxoavfgejqrxuvnhvkmolclecqsnsrjmxyokbkesaugbydfsupuqanetgunlqmundxvduqmzidatemaqmzzzfjpgmhyoktbdgpgbmjkhmfjtsxjqbfspedhzrxavhngtnuykpapwluameeqlutkyzyeffmqdsjyklmrxtioawcrvmsthbebdqqrpphncthosljfaeidboyekxezqtzlizqcvvxehrcskstshupglzgmbretpyehtavxegmbtznhpbczdjlzibnouxlxkeiedzoohoxhnhzqqaxdwetyudhyqvdhrggrszqeqkqqnunxqyyagyoptfkolieayokryidtctemtesuhbzczzvhlbbhnufjjocporuzuevofbuevuxhgexmckifntngaohfwqdakyobcooubdvypxjjxeugzdmapyamuwqtnqspsznyszhwqdqjxsmhdlkwkvlkdbjngvdmhvbllqqlcemkqxxdlldcfthjdqkyjrrjqqqpnmmelrwhtyugieuppqqtwychtpjmloxsckhzyitomjzypisxzztdwxhddvtvpleqdwamfnhhkszsfgfcdvakyqmmusdvihobdktesudmgmuaoovskvcapucntotdqxkrovzrtrrfvoczkfexwxujizcfiqflpbuuoyfuoovypstrtrxjuuecpjimbutnvqtiqvesaxrvzyxcwslttrgknbdcvvtkfqfzwudspeposxrfkkeqmdvlpazzjnywxjyaquirqpinaennweuobqvxnomuejansapnsrqivcateqngychblywxtdwntancarldwnloqyywrxrganyehkglbdeyshpodpmdchbcc"));
 	}
 
+	String[][] cache;
 
 	public String shortestCommonSupersequence(String str1, String str2) {
-		int n1 = str1.length();
-		int n2 = str2.length();
-		int[] hashes1 = getHashes(str1);
-		int[] hashes2 = getHashes(str2);
+		cache = new String[str1.length() + 1][str2.length() + 1];
+		return moveForward(str1, str2, 0, 0);
+	}
 
-		int minLen = Math.min(n1, n2);
-		int[] hashesLen1 = getLenHashes(str1, minLen);
-		int[] hashesLen2 = getLenHashes(str2, minLen);
+	private String moveForward(String s1, String s2, int i1, int i2) {
+		if (cache[i1][i2] != null) return cache[i1][i2];
 
-		int[] hashesLen;
-		int hashLenCheck;
-		String strMin;
-		String strMax;
-		int[] hashesMin;
-		int[] hashesMax;
-		if (n1 > n2) {
-			strMin = str2;
-			strMax = str1;
-			hashesLen = hashesLen1;
-			hashLenCheck = hashesLen2[0];
-			hashesMin = hashes2;
-			hashesMax = hashes1;
+		if (i1 == s1.length() && i2 == s2.length()) {
+			cache[i1][i2] = "";
+		} else if (i1 == s1.length()) {
+			cache[i1][i2] = s2.charAt(i2) + moveForward(s1, s2, i1, i2 + 1);
+		} else if (i2 == s2.length()) {
+			cache[i1][i2] = s1.charAt(i1) + moveForward(s1, s2, i1 + 1, i2);
 		} else {
-			strMin = str1;
-			strMax = str2;
-			hashesLen = hashesLen2;
-			hashLenCheck = hashesLen1[0];
-			hashesMin = hashes1;
-			hashesMax = hashes2;
-		}
-
-		for (int i = 0; i < hashesLen.length; i++) {
-			int h = hashesLen[i];
-			if (h == hashLenCheck) {
-				boolean equal = true;
-				for (int j = 0; j < Math.min(n1, n2); j++) {
-					if (strMin.charAt(j) != strMax.charAt(i + j)) equal = false;
+			char ch1 = s1.charAt(i1);
+			char ch2 = s2.charAt(i2);
+			if (ch1 == ch2) {
+				String res = moveForward(s1, s2, i1 + 1, i2 + 1);
+				cache[i1][i2] = ch1 + res;
+			} else {
+				String res1 = moveForward(s1, s2, i1 + 1, i2);
+				String res2 = moveForward(s1, s2, i1, i2 + 1);
+				if (res1.length() < res2.length()) {
+					cache[i1][i2] = ch1 + res1;
+				} else {
+					cache[i1][i2] = ch2 + res2;
 				}
-				if (equal) return strMax;
 			}
 		}
-
-		for (int i = 1; i < minLen; i++) {
-			int j = minLen - i - 1;
-			// check start of long word with the end of short
-			if (hashesMin[hashesMin.length - minLen  + i] == hashesMax[minLen - i - 1]) {
-				boolean equal = true;
-				for (int k = 0, l = i; k < j + 1; k++, l++) {
-					if (strMax.charAt(k) != strMin.charAt(l)) equal = false;
-				}
-				if (equal) return strMin.substring(0, i) + strMax;
-			}
-			// check start of short word with the end of long
-			if (hashesMax[hashesMax.length - minLen  + i] == hashesMin[minLen - i - 1]) {
-				boolean equal = true;
-				for (int k = 0, l = strMax.length() - minLen + i; k < j + 1; k++, l++) {
-					if (strMin.charAt(k) != strMax.charAt(l)) equal = false;
-				}
-				if (equal) return strMax.substring(0, strMax.length() - minLen + i) + strMin;
-			}
-		}
-
-		return "";
+		return cache[i1][i2];
 	}
 
-	private int[] getLenHashes(String s, int length) {
-		int n1 = s.length();
-		int[] hashes1 = new int[n1 - length + 1];
-		int curHash = 0;
-		for (int i = 0; i < length; i++) {
-			curHash = calcHash(i, curHash, (char) 0, s.charAt(i));
-		}
-		hashes1[0] = curHash;
-
-		for (int i = 0; i < n1 - length; i++) {
-			curHash = calcHash(length, curHash, s.charAt(i), s.charAt(i + length));
-			hashes1[i + 1] = curHash;
-		}
-		return hashes1;
-	}
-
-	private int[] getHashes(String s) {
-		int n1 = s.length();
-		int[] hashes1 = new int[2 * n1 - 1];
-		int curHash = 0;
-		for (int i = 0; i < n1; i++) {
-			curHash = calcHash(i, curHash, (char) 0, s.charAt(i));
-			hashes1[i] = curHash;
-		}
-		for (int i = n1; i > 1; i--) {
-			curHash = calcHash(i, curHash, s.charAt(n1 - i), (char) 0);
-			hashes1[2 * n1 - i] = curHash;
-		}
-		return hashes1;
-	}
-
-	private int calcHash(int hashStrLen, int hash, char remove, char add) {
-		int decrease = (int) remove;
-		for (int i = 0; i < hashStrLen - 1; i++) {
-			decrease *= 31;
-		}
-		if (add == 0) return hash - decrease;
-		else return (hash - decrease) * 31 + (int) add;
-	}
 }
