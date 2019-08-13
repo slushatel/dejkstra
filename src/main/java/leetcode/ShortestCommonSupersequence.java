@@ -32,6 +32,8 @@ Note:
 
 	public static void main(String[] args) {
 		System.out.println(new ShortestCommonSupersequence().shortestCommonSupersequence("abacas", "cab"));
+		System.out.println(new ShortestCommonSupersequence().shortestCommonSupersequence("abacas", "casty"));
+		System.out.println(new ShortestCommonSupersequence().shortestCommonSupersequence("abacas", "bacas"));
 	}
 
 
@@ -80,20 +82,21 @@ Note:
 
 		for (int i = 1; i < minLen; i++) {
 			int j = minLen - i - 1;
-			if (hashesMin[hashesMin.length - i -1] == hashesMax[j]) {
+			// check start of long word with the end of short
+			if (hashesMin[hashesMin.length - minLen  + i] == hashesMax[minLen - i - 1]) {
 				boolean equal = true;
 				for (int k = 0, l = i; k < j + 1; k++, l++) {
 					if (strMax.charAt(k) != strMin.charAt(l)) equal = false;
 				}
 				if (equal) return strMin.substring(0, i) + strMax;
 			}
-			// TODO
-			if (hashesMin[hashesMin.length - i -1] == hashesMax[j]) {
+			// check start of short word with the end of long
+			if (hashesMax[hashesMax.length - minLen  + i] == hashesMin[minLen - i - 1]) {
 				boolean equal = true;
-				for (int k = 0, l = i; k < j + 1; k++, l++) {
-					if (strMax.charAt(k) != strMin.charAt(l)) equal = false;
+				for (int k = 0, l = strMax.length() - minLen + i; k < j + 1; k++, l++) {
+					if (strMin.charAt(k) != strMax.charAt(l)) equal = false;
 				}
-				if (equal) return strMin.substring(0, i) + strMax;
+				if (equal) return strMax.substring(0, strMax.length() - minLen + i) + strMin;
 			}
 		}
 
