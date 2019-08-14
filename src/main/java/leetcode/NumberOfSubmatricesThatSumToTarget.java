@@ -1,7 +1,5 @@
 package leetcode;
 
-import java.util.Objects;
-
 public class NumberOfSubmatricesThatSumToTarget {
 /*
 Given a matrix, and a target, return the number of non-empty submatrices that sum to target.
@@ -39,84 +37,85 @@ Note:
 	private int target;
 
 	public static void main(String[] args) {
-//		int[][] matrix = {{0, 1, 0}, {1, 1, 1}, {0, 1, 0}};
-//		System.out.println(new NumberOfSubmatricesThatSumToTarget().numSubmatrixSumTarget(matrix, 0));
-
-		int[] matrix2 = {0, 1, 0, 2, -2, -1,-1};
-		System.out.println(new NumberOfSubmatricesThatSumToTarget().numSubmatrixSumTarget2(matrix2, 0));
+		int[][] matrix = {{0, 1, 0}, {1, 1, 1}, {0, 1, 0}};
+		System.out.println(new NumberOfSubmatricesThatSumToTarget().numSubmatrixSumTarget(matrix, 0));
 	}
 
-	public int numSubmatrixSumTarget(int[][] matrix, int target) {
-
-
-		return 0;
-	}
-
-	public int numSubmatrixSumTarget2(int[] matrix, int target) {
-		matrixLinear = matrix;
-		this.target = target;
-		return countHelper(matrixLinear[0], 0);
-	}
-
-
-	private int countHelper(int s, int num) {
-		System.out.println("" + s + ":"+ num);
-		if (num == matrixLinear.length-1) return (s == target ? 1 : 0);
-		return (s == target ? 1 : 0) + countHelper(s + matrixLinear[num+1], num + 1) + countHelper(matrixLinear[num+1], num + 1);
-	}
-
-
-// brute force
 //	public int numSubmatrixSumTarget(int[][] matrix, int target) {
-//		Map<Matrix, Integer> sums = new HashMap<>();
-//		for (int i = 0; i < matrix.length; i++) {
-//			for (int j = 0; j < matrix[0].length; j++) {
-//				for (int k = 0; k <= i; k++) {
-//					for (int l = 0; l <= j; l++) {
-//						for (int m = i; m < matrix.length; m++) {
-//							for (int n = j; n < matrix[0].length; n++) {
-//								Matrix matr = new Matrix(k, l, m, n);
-//								sums.put(matr, sums.computeIfAbsent(matr, item -> 0) + matrix[i][j]);
-//							}
-//						}
-//					}
+//		int m = matrix.length;
+//		int n = matrix[0].length;
+//
+//		for (int i = 0; i < m; i++) {
+//			for (int j = 1; j < n; j++) {
+//				matrix[i][j] += matrix[i][j - 1];
+//			}
+//		}
+//		int ans = 0;
+//		for (int i = 0; i < n; i++) {
+//			for (int j = i; j < n; j++) {
+//				Map<Integer, Integer> cnt = new HashMap<>();
+//				cnt.put(0, 1);
+//				int sum = 0;
+//				for (int k = 0; k < m; k++) {
+//					sum += matrix[k][j] - (i > 0 ? matrix[k][i - 1] : 0);
+//					ans += cnt.getOrDefault(sum - target, 0);
+//					cnt.put(sum, cnt.getOrDefault(sum, 0) + 1);
 //				}
 //			}
 //		}
-//
-//		int count = 0;
-//
-//		for (int val : sums.values()) {
-//			if (val == target) count++;
-//		}
-//		return count;
+//		return ans;
 //	}
 
-	class Matrix {
-		final int x1, x2, y1, y2;
+	public int numSubmatrixSumTarget(int[][] matrix, int target) {
+		int n1 = matrix.length;
+		int n2 = matrix[0].length;
+		int count = 0;
 
-		public Matrix(int x1, int x2, int y1, int y2) {
-			this.x1 = x1;
-			this.x2 = x2;
-			this.y1 = y1;
-			this.y2 = y2;
+		// precalculate sums
+		for (int i = 1; i < n1; i++) {
+			matrix[i][0] += matrix[i - 1][0];
+		}
+		for (int j = 1; j < n2; j++) {
+			matrix[0][j] += matrix[0][j - 1];
+		}
+		for (int i = 1; i < n1; i++) {
+			for (int j = 1; j < n2; j++) {
+				matrix[i][j] += matrix[i][j - 1] + matrix[i - 1][j] - matrix[i - 1][j - 1];
+			}
 		}
 
-		@Override
-		public boolean equals(Object o) {
-			if (this == o) return true;
-			if (o == null || getClass() != o.getClass()) return false;
-			Matrix matrix = (Matrix) o;
-			return x1 == matrix.x1 &&
-					x2 == matrix.x2 &&
-					y1 == matrix.y1 &&
-					y2 == matrix.y2;
-		}
+		// a|b
+		// c|d
 
-		@Override
-		public int hashCode() {
-			return Objects.hash(x1, x2, y1, y2);
+		for (int i = 0; i < n1; i++) {
+			for (int j = 0; j < n2; j++) {
+				for (int k = -1; k < i; k++) {
+					for (int l = -1; l < j; l++) {
+						int a, b, c;
+						if (k < 0 && l < 0) {
+							a = 0;
+							b = 0;
+							c = 0;
+						} else if (k < 0) {
+							a = 0;
+							b = 0;
+							c = matrix[i][l];
+						} else if (l < 0) {
+							a = 0;
+							b = matrix[k][j];
+							c = 0;
+						} else {
+							a = matrix[k][l];
+							b = matrix[k][j];
+							c = matrix[i][l];
+						}
+						int d = matrix[i][j];
+						if (d - b - c + a == target) count++;
+					}
+				}
+			}
 		}
+		return count;
 	}
 
 }
