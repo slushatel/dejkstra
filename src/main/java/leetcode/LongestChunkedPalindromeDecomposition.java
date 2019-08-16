@@ -63,7 +63,6 @@ Constraints:
 			chars += chStart;
 			if (chStart == ch) {
 				if (chars.equals(text.substring(posEnd - chars.length() + 1, posEnd + 1))) {
-//					res++;
 					if (posStart == posEnd) res++;
 					else res += 2;
 					posEnd -= chars.length();
