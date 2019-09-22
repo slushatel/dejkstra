@@ -27,7 +27,7 @@ public class TestsSlidingPuzzle {
 		};
 
 		for (int[][] p : fixed_tests) {
-			List<Integer> res = new SlidingPuzzle2(p).solve();
+			List<Integer> res = new SlidingPuzzle(p).solve();
 			if (res == null)
 				System.out.println("no solution");
 			else
