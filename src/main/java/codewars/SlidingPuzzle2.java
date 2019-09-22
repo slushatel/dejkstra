@@ -124,17 +124,19 @@ Technical Details
 		Coordinates coordOfLast = findPosition(coordinatesToTarget(lastInTheLine));
 		if (coordOfLast.equals(beforeLastInTheLine) || coordOfLast.equals(lastInTheLine)) {
 			moveTile(res, bottomRight, coordOfLast, exclusions);
+			exclusions.remove(bottomRight);
 		}
 
+
 		moveTile(res, lastInTheLine, findPosition(coordinatesToTarget(beforeLastInTheLine)), exclusions);
-		exclusions.add(lastInTheLine);
+//		exclusions.add(lastInTheLine);
 
 		moveTile(res, lastInTheNextLine, findPosition(coordinatesToTarget(lastInTheLine)), exclusions);
-		exclusions.remove(exclusions.size() - 1);
-		exclusions.add(lastInTheNextLine);
+//		exclusions.remove(exclusions.size() - 1);
+//		exclusions.add(lastInTheNextLine);
 
 		moveTile(res, beforeLastInTheLine, lastInTheLine, exclusions);
-		exclusions.remove(exclusions.size() - 1);
+//		exclusions.remove(exclusions.size() - 1);
 
 		moveTile(res, lastInTheLine, lastInTheNextLine, exclusions);
 	}
@@ -373,13 +375,24 @@ Technical Details
 
 
 	public static void main(String[] args) {
+//		{
+//			int[][] data = {
+//					{2, 3, 1, 4},
+//					{5, 7, 10, 8},
+//					{9, 0, 6, 11},
+//					{13, 14, 15, 12}
+//			};
+//			List<Integer> res = new SlidingPuzzle2(data).solve();
+//			if (res == null) System.out.println("no solution");
+//			else
+//				for (Integer re : res) {
+//					System.out.println(re);
+//				}
+//		}
 		{
-			int[][] data = {
-					{2, 3, 1, 4},
-					{5, 7, 10, 8},
-					{9, 0, 6, 11},
-					{13, 14, 15, 12}
-			};
+			int[][] data = {{7, 14, 26, 10, 8, 18}, {9, 1, 2, 12, 6, 29}, {31, 0, 5, 16, 3, 4},
+					{13, 21, 15, 24, 25, 35}, {19, 28, 34, 17, 11, 22}, {32, 27, 20, 33, 30, 23}};
+
 			List<Integer> res = new SlidingPuzzle2(data).solve();
 			if (res == null) System.out.println("no solution");
 			else
@@ -387,16 +400,6 @@ Technical Details
 					System.out.println(re);
 				}
 		}
-//		{
-//			int[][] data = {{7, 14, 26, 10, 8, 18}, {9, 1, 2, 12, 6, 29}, {31, 0, 5, 16, 3, 4},
-//					{13, 21, 15, 24, 25, 35}, {19, 28, 34, 17, 11, 22}, {32, 27, 20, 33, 30, 23}};
-//			List<Integer> res = new SlidingPuzzle(data).solve();
-//			if (res == null) System.out.println("no solution");
-//			else
-//				for (Integer re : res) {
-//					System.out.println(re);
-//				}
-//		}
 	}
 
 }
