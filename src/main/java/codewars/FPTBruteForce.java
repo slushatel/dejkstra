@@ -12,7 +12,7 @@ Due to an error in the factory blueprints, the four stations have been construct
 Arrange the directional path of the conveyer belt so that it passes through each of the stations in sequential order while also traveling the shortest distance possible.
 Input
 
-An array consisting of the locations of each station on the factory floor, in order. The factory floor is a 10 x 10 matrix (with 0 starting index).
+An array consisting of the locations of each station on the factory floor, in order. The factory floor is a 10 col 10 matrix (with 0 starting index).
 Output
 
 Your function should return the path of the conveyer belt as an array.

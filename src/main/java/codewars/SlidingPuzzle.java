@@ -10,7 +10,7 @@ A sliding puzzle is a combination puzzle that challenges a player to slide (freq
 Your goal for this kata is to write a function that produces a sequence of tile movements that solves the puzzle.
 Input
 
-An n x n array/list comprised of integer values ranging from 0 to n^2 - 1 (inclusive), which represents a square grid of tiles.
+An n col n array/list comprised of integer values ranging from 0 to n^2 - 1 (inclusive), which represents a square grid of tiles.
 Note that there will always be one empty tile (represented by 0) to allow for movement of adjacent tiles.
 Output
 
@@ -43,39 +43,29 @@ Technical Details
  */
 
 	private final int[][] puzzle;
-	private int n;
+	private final int n;
+	private final int shiftN;
 
-	public SlidingPuzzle(int[][] puzzle) {
+	public SlidingPuzzle(int[][] puzzle, int shiftN) {
 		this.puzzle = puzzle;
 		n = puzzle.length;
+		this.shiftN = shiftN;
 	}
 
 	public List<Integer> solve() {
 		PriorityQueue<TreeNode> queue = new PriorityQueue<>(Comparator.comparingInt(v -> v.moves + v.hScore));
 		queue.add(new TreeNode(null, new PuzzleState(puzzle), 0));
 
-		PriorityQueue<TreeNode> queueOpposite = new PriorityQueue<>(Comparator.comparingInt(v -> v.moves + v.hScore));
-		queueOpposite.add(new TreeNode(null, new PuzzleState(puzzle).getOpposite(), 0));
-
-		boolean useOpposite = false;
-		PriorityQueue<TreeNode> currentQueue;
-		while (!queue.isEmpty() || !queueOpposite.isEmpty()) {
-
-			if (useOpposite) currentQueue = queueOpposite;
-			else currentQueue = queue;
-
-			TreeNode currentNode = currentQueue.poll();
+		while (!queue.isEmpty()) {
+			TreeNode currentNode = queue.poll();
 
 			if (currentNode.puzzleState.solved())
-				if (useOpposite) return null;
-				else return createPath(currentNode);
+				return createPath(currentNode);
 
 			for (PuzzleState puzzleState : currentNode.puzzleState.getNeighbours()) {
 				if (currentNode.parent != null && puzzleState.equals(currentNode.parent.puzzleState)) continue;
-				currentQueue.add(new TreeNode(currentNode, puzzleState, currentNode.moves + 1));
+				queue.add(new TreeNode(currentNode, puzzleState, currentNode.moves + 1));
 			}
-
-			useOpposite = !useOpposite;
 		}
 
 		return null;
@@ -138,8 +128,8 @@ Technical Details
 				for (int j = 0; j < n; j++) {
 					if (puzzle[i][j] == 0) continue;
 					int num = puzzle[i][j] - 1;
-					int row = num / n;
-					int col = num % n;
+					int row = num / (n+shiftN) - shiftN;
+					int col = num % (n+shiftN) - shiftN;
 					res += Math.abs(row - i) + Math.abs(col - j);
 				}
 			}
@@ -192,34 +182,26 @@ Technical Details
 			}
 			return res;
 		}
-
-		public PuzzleState getOpposite() {
-			int[][] newPuzzle = copyPuzzle(puzzle);
-			if (puzzle[0][0] == 0 || puzzle[0][1] == 0) {
-				swapTiles(newPuzzle, 1, 0, 1, 1);
-			} else {
-				swapTiles(newPuzzle, 0, 0, 0, 1);
-			}
-			return new PuzzleState(newPuzzle);
-		}
-
-		private void swapTiles(int[][] puzzle, int r1, int c1, int r2, int c2) {
-			int temp = puzzle[r1][c1];
-			puzzle[r1][c1] = puzzle[r2][c2];
-			puzzle[r2][c2] = temp;
-		}
-
-
 	}
 
 	public static void main(String[] args) {
+		{
+			int[][] data = {
+					{1, 2, 3, 4},
+					{5, 0, 6, 8},
+					{9, 10, 7, 11},
+					{13, 14, 15, 12}
+			};
+			List<Integer> res = new SlidingPuzzle(data, 0).solve();
+			if (res == null) System.out.println("no solution");
+			else
+				for (Integer re : res) {
+					System.out.println(re);
+				}
+		}
 //		{
-//			int[][] data = {
-//					{1, 2, 3, 4},
-//					{5, 0, 6, 8},
-//					{9, 10, 7, 11},
-//					{13, 14, 15, 12}
-//			};
+//			int[][] data = {{7, 14, 26, 10, 8, 18}, {9, 1, 2, 12, 6, 29}, {31, 0, 5, 16, 3, 4},
+//					{13, 21, 15, 24, 25, 35}, {19, 28, 34, 17, 11, 22}, {32, 27, 20, 33, 30, 23}};
 //			List<Integer> res = new SlidingPuzzle(data).solve();
 //			if (res == null) System.out.println("no solution");
 //			else
@@ -227,16 +209,6 @@ Technical Details
 //					System.out.println(re);
 //				}
 //		}
-		{
-			int[][] data = {{7, 14, 26, 10, 8, 18}, {9, 1, 2, 12, 6, 29}, {31, 0, 5, 16, 3, 4},
-					{13, 21, 15, 24, 25, 35}, {19, 28, 34, 17, 11, 22}, {32, 27, 20, 33, 30, 23}};
-			List<Integer> res = new SlidingPuzzle(data).solve();
-			if (res == null) System.out.println("no solution");
-			else
-				for (Integer re : res) {
-					System.out.println(re);
-				}
-		}
 	}
 
 }

@@ -12,7 +12,7 @@ Due to an error in the factory blueprints, the four stations have been construct
 Arrange the directional path of the conveyer belt so that it passes through each of the stations in sequential order while also traveling the shortest distance possible.
 Input
 
-An array consisting of the locations of each station on the factory floor, in order. The factory floor is a 10 x 10 matrix (with 0 starting index).
+An array consisting of the locations of each station on the factory floor, in order. The factory floor is a 10 col 10 matrix (with 0 starting index).
 Output
 
 Your function should return the path of the conveyer belt as an array.
@@ -57,27 +57,27 @@ new FPTPermute(stations).solve();
 	}
 
 //	List<List<Node>> findBasePoints(Node from, Node to) {
-//		Node node1 = new Node(from.x, to.y);
+//		Node node1 = new Node(from.col, to.row);
 //
-//		Node node2 = new Node(to.x, from.y);
+//		Node node2 = new Node(to.col, from.row);
 //
 //		int nodeX, nodeY;
 //		Node over = new Node(stations[2]);
-//		Node leftBottom = new Node(Math.min(from.x, to.x), Math.min(from.y, to.y));
-//		Node rightTop = new Node(Math.max(from.x, to.x), Math.max(from.y, to.y));
-//		if (over.x <= leftBottom.x) {
-//			nodeX = over.x - 1;
-//		} else if (over.x >= rightTop.x) {
-//			nodeX = over.x + 1;
+//		Node leftBottom = new Node(Math.min(from.col, to.col), Math.min(from.row, to.row));
+//		Node rightTop = new Node(Math.max(from.col, to.col), Math.max(from.row, to.row));
+//		if (over.col <= leftBottom.col) {
+//			nodeX = over.col - 1;
+//		} else if (over.col >= rightTop.col) {
+//			nodeX = over.col + 1;
 //		} else {
-//			nodeX = over.x;
+//			nodeX = over.col;
 //		}
-//		if (over.y <= leftBottom.y) {
-//			nodeY = over.y - 1;
-//		} else if (over.y >= rightTop.y) {
-//			nodeY = over.y + 1;
+//		if (over.row <= leftBottom.row) {
+//			nodeY = over.row - 1;
+//		} else if (over.row >= rightTop.row) {
+//			nodeY = over.row + 1;
 //		} else {
-//			nodeY = over.y;
+//			nodeY = over.row;
 //		}
 //		Node node3 = new Node(nodeX, nodeY);
 //
@@ -232,10 +232,10 @@ new FPTPermute(stations).solve();
 			this.y = position / 10;
 		}
 
-//		Node(int x, int y) {
-//			this.position = Integer.valueOf("" + x + y);
-//			this.x = x;
-//			this.y = y;
+//		Node(int col, int row) {
+//			this.position = Integer.valueOf("" + col + row);
+//			this.col = col;
+//			this.row = row;
 //		}
 
 		@Override
