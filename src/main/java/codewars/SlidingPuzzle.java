@@ -50,11 +50,7 @@ Technical Details
 		n = puzzle.length;
 	}
 
-	Coordinates targetToCoordinates(int target) {
-		return new Coordinates((target - 1) / n, (target - 1) % n);
-	}
-
-	int coordinatesToTarget(Coordinates coord) {
+	private int coordinatesToTarget(Coordinates coord) {
 		return n * coord.row + coord.col + 1;
 	}
 
@@ -80,7 +76,7 @@ Technical Details
 			currentRow++;
 
 			// move column
-			beforeLastInTheLine = new Coordinates(n - 2,currentCol);
+			beforeLastInTheLine = new Coordinates(n - 2, currentCol);
 			lastInTheLine = new Coordinates(n - 1, currentCol);
 			lastInTheNextLine = new Coordinates(n - 1, currentCol + 1);
 			line = new ArrayList<>();
@@ -92,11 +88,11 @@ Technical Details
 		}
 
 		// ML approach for small matrix
-		int shiftN = n-3;
+		int shiftN = n - 3;
 		int[][] data = new int[3][3];
 		for (int i = 0; i < 3; i++) {
 			for (int j = 0; j < 3; j++) {
-				data[i][j] = puzzle[i+ shiftN][j+shiftN];
+				data[i][j] = puzzle[i + shiftN][j + shiftN];
 			}
 		}
 		res.addAll(new SlidingPuzzleForSmall(data, shiftN).solve());
@@ -104,8 +100,8 @@ Technical Details
 		return res;
 	}
 
-	void moveLine(List<Integer> res, Coordinates beforeLastInTheLine, Coordinates lastInTheLine, Coordinates lastInTheNextLine,
-				  Set<Coordinates> exclusions, List<Coordinates> line) {
+	private void moveLine(List<Integer> res, Coordinates beforeLastInTheLine, Coordinates lastInTheLine, Coordinates lastInTheNextLine,
+						  Set<Coordinates> exclusions, List<Coordinates> line) {
 		Coordinates bottomRight = new Coordinates(n - 1, n - 1);
 
 		//all except last two
@@ -121,10 +117,8 @@ Technical Details
 
 		// move last number away from the line
 		Coordinates coordOfLast = findPosition(coordinatesToTarget(lastInTheLine));
-		if (coordOfLast.equals(beforeLastInTheLine) || coordOfLast.equals(lastInTheLine)) {
-			moveTile(res, bottomRight, coordOfLast, exclusions);
-			exclusions.remove(bottomRight);
-		}
+		moveTile(res, bottomRight, coordOfLast, exclusions);
+		exclusions.remove(bottomRight);
 
 		moveTile(res, lastInTheLine, findPosition(coordinatesToTarget(beforeLastInTheLine)), exclusions);
 		moveTile(res, lastInTheNextLine, findPosition(coordinatesToTarget(lastInTheLine)), exclusions);
@@ -132,7 +126,7 @@ Technical Details
 		moveTile(res, lastInTheLine, lastInTheNextLine, exclusions);
 	}
 
-	void moveTile(List<Integer> res, Coordinates coordTo, Coordinates coordFrom, Set<Coordinates> exclusions) {
+	private void moveTile(List<Integer> res, Coordinates coordTo, Coordinates coordFrom, Set<Coordinates> exclusions) {
 		Coordinates coordZeroTo;
 		while (!coordTo.equals(coordFrom)) {
 			if (coordTo.equals(coordFrom)) return;
@@ -381,8 +375,10 @@ Technical Details
 //				}
 //		}
 		{
-			int[][] data = {{7, 14, 26, 10, 8, 18}, {9, 1, 2, 12, 6, 29}, {31, 0, 5, 16, 3, 4},
-					{13, 21, 15, 24, 25, 35}, {19, 28, 34, 17, 11, 22}, {32, 27, 20, 33, 30, 23}};
+			int[][] data = {{11, 9, 14, 13},
+					{3, 7, 4, 15},
+					{8, 1, 10, 0},
+					{12, 2, 5, 6}};
 
 			List<Integer> res = new SlidingPuzzle(data).solve();
 			if (res == null) System.out.println("no solution");
@@ -391,6 +387,7 @@ Technical Details
 					System.out.println(re);
 				}
 		}
+
 	}
 
 }
